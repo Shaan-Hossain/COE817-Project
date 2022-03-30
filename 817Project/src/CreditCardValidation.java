@@ -42,9 +42,6 @@ public class CreditCardValidation {
             return false;
         }
 
-
-
-
     }
 
     public static boolean IsCardExpired(String ExpiryInput) throws ParseException {

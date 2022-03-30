@@ -124,13 +124,13 @@ public class Supervisor {
             String enc_PostalCode = clientIn.nextLine();
             System.out.println("Encrypted Client postal Code: " + enc_PostalCode);
 
-            SecretKey SecKey_gen = getKeyFromPassword(sesh_KeyByteDecode,saltString);
+            SecretKey SecKey_gen = Utility.getKeyFromPassword(sesh_KeyByteDecode,saltString);
 
-            String dec_Name = decrypt(enc_cardHolderName, SecKey_gen,ivParameterSpec);
-            String dec_Number = decrypt(enc_cardNumber, SecKey_gen,ivParameterSpec);
-            String dec_Exp = decrypt(enc_cardExp, SecKey_gen,ivParameterSpec);
-            String dec_CVV = decrypt(enc_cardCVV, SecKey_gen,ivParameterSpec);
-            String dec_PostalCode = decrypt(enc_PostalCode, SecKey_gen,ivParameterSpec);
+            String dec_Name = Utility.decrypt(enc_cardHolderName, SecKey_gen,ivParameterSpec);
+            String dec_Number = Utility.decrypt(enc_cardNumber, SecKey_gen,ivParameterSpec);
+            String dec_Exp = Utility.decrypt(enc_cardExp, SecKey_gen,ivParameterSpec);
+            String dec_CVV = Utility.decrypt(enc_cardCVV, SecKey_gen,ivParameterSpec);
+            String dec_PostalCode = Utility.decrypt(enc_PostalCode, SecKey_gen,ivParameterSpec);
 
             System.out.println("Decrypted Cardholder Name: " + dec_Name);
             System.out.println("Decrypted Credit Card Number: " + dec_Number);
@@ -156,36 +156,6 @@ public class Supervisor {
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
-    }
-
-    public static SecretKey getKeyFromPassword(String password, String salt)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
-        SecretKey secret = new SecretKeySpec(factory.generateSecret(spec)
-                .getEncoded(), "AES");
-        return secret;
-    }
-
-    public static IvParameterSpec generateIv() {
-        byte[] iv = new byte[16];
-        new SecureRandom().nextBytes(iv);
-        return new IvParameterSpec(iv);
-    }
-
-    public static String decrypt(String encryptedMessage, SecretKey SecKey_gen, IvParameterSpec iv) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-        String en_Msg = encryptedMessage;
-
-        Cipher DES_Cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        DES_Cipher.init(Cipher.DECRYPT_MODE, SecKey_gen, iv);
-
-        byte[] decByteCode = Base64.getDecoder().decode(en_Msg);
-        byte[] deEncByte = DES_Cipher.doFinal(decByteCode);
-
-        String dec_FinalMsg = new String(deEncByte);
-
-        return dec_FinalMsg;
     }
 
 }

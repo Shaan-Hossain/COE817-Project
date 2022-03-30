@@ -186,13 +186,13 @@ public class Client {
                 isValidPostalCode = CreditCardValidation.postalcodeValidation(PostalCode);
             }
 
-            SecretKey SecKey_gen2 = getKeyFromPassword(sessionKey, saltString);
+            SecretKey SecKey_gen2 = Utility.getKeyFromPassword(sessionKey, saltString);
 
-            String enc_cardHolderName = encrypt(cardHolderName, SecKey_gen2, ivParameterSpec);
-            String enc_cardNumber = encrypt(cardNumber, SecKey_gen2, ivParameterSpec);
-            String enc_cardExp = encrypt(cardExp, SecKey_gen2, ivParameterSpec);
-            String enc_cardCVV = encrypt(cardCVV, SecKey_gen2, ivParameterSpec);
-            String enc_PostalCode = encrypt(PostalCode, SecKey_gen2, ivParameterSpec);
+            String enc_cardHolderName = Utility.encrypt(cardHolderName, SecKey_gen2, ivParameterSpec);
+            String enc_cardNumber = Utility.encrypt(cardNumber, SecKey_gen2, ivParameterSpec);
+            String enc_cardExp = Utility.encrypt(cardExp, SecKey_gen2, ivParameterSpec);
+            String enc_cardCVV = Utility.encrypt(cardCVV, SecKey_gen2, ivParameterSpec);
+            String enc_PostalCode = Utility.encrypt(PostalCode, SecKey_gen2, ivParameterSpec);
             System.out.println("encrypted");
 
             printStr.println(enc_cardHolderName);
@@ -224,25 +224,4 @@ public class Client {
         }
     }
 
-    public static SecretKey getKeyFromPassword(String password, String salt)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
-
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
-        SecretKey secret = new SecretKeySpec(factory.generateSecret(spec)
-                .getEncoded(), "AES");
-        return secret;
-    }
-
-
-    public static String encrypt(String encryptedMessage, SecretKey SecKey_gen, IvParameterSpec iv) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, InvalidAlgorithmParameterException {
-        Cipher DES_Cipher2 = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
-        DES_Cipher2.init(Cipher.ENCRYPT_MODE, SecKey_gen, iv);
-        byte[] Msg_ByteCode = DES_Cipher2.doFinal(encryptedMessage.getBytes("UTF-8"));
-
-        String enc_Msg = Base64.getEncoder().encodeToString(Msg_ByteCode);
-
-        return enc_Msg;
-    }
 }
