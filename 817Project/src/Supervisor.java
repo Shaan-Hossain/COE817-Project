@@ -35,112 +35,109 @@ public class Supervisor {
 
     public static void main(String[] args) throws IOException {
 
-        Cipher rCipher;
-        PublicKey publicK_A, publicK_B;
-        PrivateKey privateK_B;
-        KeyPair keyPair_B;
-        KeyPairGenerator keyPairGen_B;
-        int Socket_Port = 10001;
+        Cipher supervisorCipher;
+        PublicKey pk_A, pk_B;
+        PrivateKey prK_B;
+        KeyPair kP_B;
+        KeyPairGenerator kPG_B;
+        int Port = 10001;
 
-        String IDb = "Seller";
 
-        System.out.println("=====================");
-        System.out.println("| Seller's Terminal |");
-        System.out.println("=====================");
-        ServerSocket ss = new ServerSocket(Socket_Port);
-        System.out.println("Starting connection to Client's terminal on socket: " + Socket_Port);
-        Socket ssc = ss.accept();
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
+        System.out.println("| Supervisor Interface |");
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~");
+        ServerSocket sock = new ServerSocket(Port);
+        System.out.println("Starting connection to Client's terminal on socket: " + Port);
+        Socket SockClient = sock.accept();
         System.out.println("Successfully Connected to Client");
-        Scanner clientIn = new Scanner(ssc.getInputStream());
-        PrintStream printStr = new PrintStream(ssc.getOutputStream());
+        Scanner inputClient = new Scanner(SockClient.getInputStream());
+        PrintStream printStr = new PrintStream(SockClient.getOutputStream());
 
         try {
 
-            keyPairGen_B = KeyPairGenerator.getInstance("RSA");
-            keyPair_B = keyPairGen_B.generateKeyPair();
-            publicK_B = keyPair_B.getPublic();
-            privateK_B = keyPair_B.getPrivate();
-            String publicKeyString_B = Base64.getEncoder().encodeToString(publicK_B.getEncoded());
-            printStr.println(publicKeyString_B);
-            rCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            rCipher.init(Cipher.DECRYPT_MODE, privateK_B);
-            String client_IDa = clientIn.nextLine();
-            String client_nA = clientIn.nextLine();
-            byte[] c_byteCode = Base64.getDecoder().decode(client_IDa);
-            byte[] c_nAByteCode = Base64.getDecoder().decode(client_nA);
-            client_IDa = new String(rCipher.doFinal(c_byteCode));
-            client_nA = new String(rCipher.doFinal(c_nAByteCode));
-            System.out.println("Client's ID is: " + client_IDa + " -- with timestamp: -- " + client_nA );
+            kPG_B = KeyPairGenerator.getInstance("RSA");
+            kP_B = kPG_B.generateKeyPair();
+            pk_B = kP_B.getPublic();
+            prK_B = kP_B.getPrivate();
+            String pbkS_B = Base64.getEncoder().encodeToString(pk_B.getEncoded());
+            printStr.println(pbkS_B);
+            supervisorCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            supervisorCipher.init(Cipher.DECRYPT_MODE, prK_B);
+            String ClientIdentifier = inputClient.nextLine();
+            String nonceA_Client = inputClient.nextLine();
+            byte[] c_BC = Base64.getDecoder().decode(ClientIdentifier);
+            byte[] c_NonceBC = Base64.getDecoder().decode(nonceA_Client);
+            ClientIdentifier = new String(supervisorCipher.doFinal(c_BC));
+            nonceA_Client = new String(supervisorCipher.doFinal(c_NonceBC));
+            System.out.println("Client's ID is: " + ClientIdentifier + " -- with timestamp: -- " + nonceA_Client );
 
-            String ServerPublicKey_A = clientIn.nextLine();
-            byte[] s_nAByteCode = Base64.getDecoder().decode(ServerPublicKey_A);
-            X509EncodedKeySpec X509_KeySpec = new X509EncodedKeySpec(s_nAByteCode);
-            publicK_A = KeyFactory.getInstance("RSA").generatePublic(X509_KeySpec);
+            String SupervisorPubK_A = inputClient.nextLine();
+            byte[] supervisor_nABC = Base64.getDecoder().decode(SupervisorPubK_A);
+            X509EncodedKeySpec X509_KeySpec = new X509EncodedKeySpec(supervisor_nABC);
+            pk_A = KeyFactory.getInstance("RSA").generatePublic(X509_KeySpec);
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            String B_Date = dateFormat.format(new Date());
-            rCipher.init(Cipher.ENCRYPT_MODE, publicK_A);
-            byte[] c_nAByteCode2 = rCipher.doFinal(client_nA.getBytes("UTF-8"));
-            byte[] c_nBByteCode2 = rCipher.doFinal(B_Date.getBytes("UTF-8"));
-            String enc_nA = Base64.getEncoder().encodeToString(c_nAByteCode2);
-            String enc_nB = Base64.getEncoder().encodeToString(c_nBByteCode2);
-            printStr.println(enc_nA);
-            printStr.println(enc_nB);
+            String date_B = dateFormat.format(new Date());
+            supervisorCipher.init(Cipher.ENCRYPT_MODE, pk_A);
+            byte[] client_NonceABC2 = supervisorCipher.doFinal(nonceA_Client.getBytes("UTF-8"));
+            byte[] client_NonceBBC2 = supervisorCipher.doFinal(date_B.getBytes("UTF-8"));
+            String encrypted_nA = Base64.getEncoder().encodeToString(client_NonceABC2);
+            String encrypted_nB = Base64.getEncoder().encodeToString(client_NonceBBC2);
+            printStr.println(encrypted_nA);
+            printStr.println(encrypted_nB);
 
-            rCipher.init(Cipher.DECRYPT_MODE, privateK_B);
-            String c_nB = clientIn.nextLine();
-            byte[] c_BDecByteCode = Base64.getDecoder().decode(c_nB);
-            c_nB = new String(rCipher.doFinal(c_BDecByteCode));
-            System.out.println("Received Timestamp: " + c_nB);
+            supervisorCipher.init(Cipher.DECRYPT_MODE, prK_B);
+            String c_NonceB = inputClient.nextLine();
+            byte[] c_BDecByteCode = Base64.getDecoder().decode(c_NonceB);
+            c_NonceB = new String(supervisorCipher.doFinal(c_BDecByteCode));
+            System.out.println("Received Timestamp: " + c_NonceB);
 
-            String sesh_Key = clientIn.nextLine();
-            String saltEnc = clientIn.nextLine();
-            String ivEnc = clientIn.nextLine();
+            String session_Key = inputClient.nextLine();
+            String saltEncrypted = inputClient.nextLine();
 
-            byte[] ivByteCode =  Base64.getDecoder().decode(ivEnc);
-            byte[] sesh_KeyByteCode = Base64.getDecoder().decode(sesh_Key);
-            byte[] enc_saltByteCode = Base64.getDecoder().decode(saltEnc);
-            String sesh_KeyByteDecode = new String(rCipher.doFinal(sesh_KeyByteCode));
-            String saltString = new String(rCipher.doFinal(enc_saltByteCode));
-            String ivString = new String(rCipher.doFinal(ivByteCode));
+            byte[] session_KeyByteCode = Base64.getDecoder().decode(session_Key);
+            byte[] encrypted_saltByteCode = Base64.getDecoder().decode(saltEncrypted);
+            String session_KeyByteDecode = new String(supervisorCipher.doFinal(session_KeyByteCode));
+            String saltString = new String(supervisorCipher.doFinal(encrypted_saltByteCode));
 
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[16]);
-            System.out.println("Session Key: " + sesh_KeyByteDecode);
+
+            IvParameterSpec ivPS = new IvParameterSpec(new byte[16]);
+            System.out.println("Session Key: " + session_KeyByteDecode);
             System.out.println("Salt: " + saltString);
-            System.out.println("iv: " + ivParameterSpec);
+            System.out.println("iv: " + ivPS);
 
-            String enc_cardHolderName = clientIn.nextLine();
-            System.out.println("Encrypted Cardholder Name: " + enc_cardHolderName);
+            String encrypted_cardHolderName = inputClient.nextLine();
+            System.out.println("Encrypted Cardholder Name: " + encrypted_cardHolderName);
 
-            String enc_cardNumber = clientIn.nextLine();
-            System.out.println("Encrypted Credit Card Number: " + enc_cardNumber);
+            String encrypted_cardNumber = inputClient.nextLine();
+            System.out.println("Encrypted Credit Card Number: " + encrypted_cardNumber);
 
-            String enc_cardExp = clientIn.nextLine();
-            System.out.println("Encrypted Credit Card Expiry: " + enc_cardExp);
+            String encrypted_cardExp = inputClient.nextLine();
+            System.out.println("Encrypted Credit Card Expiry: " + encrypted_cardExp);
 
-            String enc_cardCVV = clientIn.nextLine();
-            System.out.println("Encrypted Credit Card CVV Code: " + enc_cardCVV);
+            String encrypted_cardCVV = inputClient.nextLine();
+            System.out.println("Encrypted Credit Card CVV Code: " + encrypted_cardCVV);
 
-            String enc_PostalCode = clientIn.nextLine();
-            System.out.println("Encrypted Client postal Code: " + enc_PostalCode);
+            String encrypted_PostalCode = inputClient.nextLine();
+            System.out.println("Encrypted Client postal Code: " + encrypted_PostalCode);
 
-            String enc_itemOrdered = clientIn.nextLine();
-            System.out.println("Encrypted item purchased: " + enc_itemOrdered);
+            String encrypted_itemOrdered = inputClient.nextLine();
+            System.out.println("Encrypted item purchased: " + encrypted_itemOrdered);
 
-            SecretKey SecKey_gen = Utility.getKeyFromPassword(sesh_KeyByteDecode, saltString);
+            SecretKey SecretKey_Gen = Utility.genKeyWithSalt(session_KeyByteDecode, saltString);
 
-            String dec_Name = Utility.decrypt(enc_cardHolderName, SecKey_gen, ivParameterSpec);
-            String dec_Number = Utility.decrypt(enc_cardNumber, SecKey_gen, ivParameterSpec);
-            String dec_Exp = Utility.decrypt(enc_cardExp, SecKey_gen, ivParameterSpec);
-            String dec_CVV = Utility.decrypt(enc_cardCVV, SecKey_gen, ivParameterSpec);
-            String dec_PostalCode = Utility.decrypt(enc_PostalCode, SecKey_gen, ivParameterSpec);
-            String dec_itemOrdered = Utility.decrypt(enc_itemOrdered, SecKey_gen, ivParameterSpec);
+            String decrypted_Name = Utility.decrypt(encrypted_cardHolderName, SecretKey_Gen, ivPS);
+            String decrypted_Number = Utility.decrypt(encrypted_cardNumber, SecretKey_Gen, ivPS);
+            String decrypted_Exp = Utility.decrypt(encrypted_cardExp, SecretKey_Gen, ivPS);
+            String decrypted_CVV = Utility.decrypt(encrypted_cardCVV, SecretKey_Gen, ivPS);
+            String decrypted_PostalCode = Utility.decrypt(encrypted_PostalCode, SecretKey_Gen, ivPS);
+            String decrypted_itemOrdered = Utility.decrypt(encrypted_itemOrdered, SecretKey_Gen, ivPS);
 
-            System.out.println("Decrypted Cardholder Name: " + dec_Name);
-            System.out.println("Decrypted Credit Card Number: " + dec_Number);
-            System.out.println("Decrypted Expiry Date in MMYY: " + dec_Exp);
-            System.out.println("Decrypted Credit Card CVV Code: " + dec_CVV);
-            System.out.println("Decrypted Postal Code: " + dec_PostalCode);
-            System.out.println("Decrypted Item Ordered: " + dec_itemOrdered);
+            System.out.println("Decrypted Cardholder Name: " + decrypted_Name);
+            System.out.println("Decrypted Credit Card Number: " + decrypted_Number);
+            System.out.println("Decrypted Expiry Date in MMYY: " + decrypted_Exp);
+            System.out.println("Decrypted Credit Card CVV Code: " + decrypted_CVV);
+            System.out.println("Decrypted Postal Code: " + decrypted_PostalCode);
+            System.out.println("Decrypted Item Ordered: " + decrypted_itemOrdered);
 
 
         }
