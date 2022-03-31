@@ -93,7 +93,9 @@ public class Supervisor {
 
             String session_Key = inputClient.nextLine();
             String saltEncrypted = inputClient.nextLine();
+            String ivEncrypted = inputClient.nextLine();
 
+            byte[] ivBC =  Base64.getDecoder().decode(ivEncrypted);
             byte[] session_KeyByteCode = Base64.getDecoder().decode(session_Key);
             byte[] encrypted_saltByteCode = Base64.getDecoder().decode(saltEncrypted);
             String session_KeyByteDecode = new String(supervisorCipher.doFinal(session_KeyByteCode));
