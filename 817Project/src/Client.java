@@ -139,30 +139,46 @@ public class Client {
                     case "5" : ordering = false;
                     case "1" : {
                         itemOrdered = "Prebuilt PC";
-                        System.out.println("Checking if the item is in stock. ");
-                        if (Math.random() * 10 > 3)
-                            System.out.println("This item is in stock, please proceed to checkout");
+                        System.out.println("Checking if the item is in stock.");
+                        if (Math.random() * 10 > 3) {
+                            System.out.println("This item is in stock, please proceed to checkout.");
+                            ordering = false;
+                            }
+                        else
+                            System.out.println("This item is not in stock, please pick again.");
                     }
                     break;
                     case "2" : {
                         itemOrdered = "NVIDIA 2080TI";
-                        System.out.println("Checking if the item is in stock. ");
-                        if (Math.random() * 10 > 3)
-                            System.out.println("This item is in stock, please proceed to checkout");
+                        System.out.println("Checking if the item is in stock.");
+                        if (Math.random() * 10 > 3) {
+                            System.out.println("This item is in stock, please proceed to checkout.");
+                            ordering = false;
+                        }
+                        else
+                            System.out.println("This item is not in stock, please pick again.");
                     }
                     break;
                     case "3" : {
                         itemOrdered = "Intel i9 9990K";
-                        System.out.println("Checking if the item is in stock. ");
-                        if (Math.random() * 10 > 3)
-                            System.out.println("This item is in stock, please proceed to checkout");
+                        System.out.println("Checking if the item is in stock.");
+                        if (Math.random() * 10 > 3) {
+                            System.out.println("This item is in stock, please proceed to checkout.");
+                            ordering = false;
+                        }
+                        else
+                            System.out.println("This item is not in stock, please pick again.");
                     }
                     break;
                     case "4" : {
                         itemOrdered = "Corsair Gold PSU";
-                        System.out.println("Checking if the item is in stock. ");
-                        if (Math.random() * 10 > 3)
-                            System.out.println("This item is in stock, please proceed to checkout");
+                        System.out.println("Checking if the item is in stock.");
+                        if (Math.random() * 10 > 3) {
+                            System.out.println("This item is in stock, please proceed to checkout.");
+                            ordering = false;
+                        }
+                        else
+                            System.out.println("This item is not in stock, please pick again.");
                     }
                 }
             }
