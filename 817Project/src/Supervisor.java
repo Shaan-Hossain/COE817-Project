@@ -104,10 +104,9 @@ public class Supervisor {
             String ivString = new String(rCipher.doFinal(ivByteCode));
 
             IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[16]);
-
             System.out.println("Session Key: " + sesh_KeyByteDecode);
             System.out.println("Salt: " + saltString);
-            System.out.println("iv: "+ ivParameterSpec);
+            System.out.println("iv: " + ivParameterSpec);
 
             String enc_cardHolderName = clientIn.nextLine();
             System.out.println("Encrypted Cardholder Name: " + enc_cardHolderName);
@@ -124,36 +123,30 @@ public class Supervisor {
             String enc_PostalCode = clientIn.nextLine();
             System.out.println("Encrypted Client postal Code: " + enc_PostalCode);
 
-            SecretKey SecKey_gen = Utility.getKeyFromPassword(sesh_KeyByteDecode,saltString);
+            String enc_itemOrdered = clientIn.nextLine();
+            System.out.println("Encrypted item purchased: " + enc_itemOrdered);
 
-            String dec_Name = Utility.decrypt(enc_cardHolderName, SecKey_gen,ivParameterSpec);
-            String dec_Number = Utility.decrypt(enc_cardNumber, SecKey_gen,ivParameterSpec);
-            String dec_Exp = Utility.decrypt(enc_cardExp, SecKey_gen,ivParameterSpec);
-            String dec_CVV = Utility.decrypt(enc_cardCVV, SecKey_gen,ivParameterSpec);
-            String dec_PostalCode = Utility.decrypt(enc_PostalCode, SecKey_gen,ivParameterSpec);
+            SecretKey SecKey_gen = Utility.getKeyFromPassword(sesh_KeyByteDecode, saltString);
+
+            String dec_Name = Utility.decrypt(enc_cardHolderName, SecKey_gen, ivParameterSpec);
+            String dec_Number = Utility.decrypt(enc_cardNumber, SecKey_gen, ivParameterSpec);
+            String dec_Exp = Utility.decrypt(enc_cardExp, SecKey_gen, ivParameterSpec);
+            String dec_CVV = Utility.decrypt(enc_cardCVV, SecKey_gen, ivParameterSpec);
+            String dec_PostalCode = Utility.decrypt(enc_PostalCode, SecKey_gen, ivParameterSpec);
+            String dec_itemOrdered = Utility.decrypt(enc_itemOrdered, SecKey_gen, ivParameterSpec);
 
             System.out.println("Decrypted Cardholder Name: " + dec_Name);
             System.out.println("Decrypted Credit Card Number: " + dec_Number);
             System.out.println("Decrypted Expiry Date in MMYY: " + dec_Exp);
             System.out.println("Decrypted Credit Card CVV Code: " + dec_CVV);
             System.out.println("Decrypted Postal Code: " + dec_PostalCode);
+            System.out.println("Decrypted Item Ordered: " + dec_itemOrdered);
+
 
         }
         catch (IOException i) {
             System.out.println(i);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
     }

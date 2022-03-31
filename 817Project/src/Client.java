@@ -21,6 +21,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Scanner;
 import java.text.SimpleDateFormat;
+import java.math.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -121,7 +122,52 @@ public class Client {
             printStr.println(enc_saltByteCode);
             printStr.println(enc_ivByteCode);
 
-            System.out.println("Please Enter your Credit Card Information Below: \n");
+            boolean ordering = true;
+            String itemOrdered = "";
+
+            while (ordering) {
+                System.out.println("Which item would you like to purchase?");
+                System.out.println("1. Prebuilt PC");
+                System.out.println("2. NVIDIA 2080TI");
+                System.out.println("3. Intel i9 9990K");
+                System.out.println("4. Corsair Gold PSU");
+                System.out.println("5. Quit");
+                System.out.println("Please enter the number associated with the item, or 5 to quit: \n");
+                String userChoice = userInput.nextLine();
+
+                switch (userChoice) {
+                    case "5" : ordering = false;
+                    case "1" : {
+                        itemOrdered = "Prebuilt PC";
+                        System.out.println("Checking if the item is in stock. ");
+                        if (Math.random() * 10 > 3)
+                            System.out.println("This item is in stock, please proceed to checkout");
+                    }
+                    break;
+                    case "2" : {
+                        itemOrdered = "NVIDIA 2080TI";
+                        System.out.println("Checking if the item is in stock. ");
+                        if (Math.random() * 10 > 3)
+                            System.out.println("This item is in stock, please proceed to checkout");
+                    }
+                    break;
+                    case "3" : {
+                        itemOrdered = "Intel i9 9990K";
+                        System.out.println("Checking if the item is in stock. ");
+                        if (Math.random() * 10 > 3)
+                            System.out.println("This item is in stock, please proceed to checkout");
+                    }
+                    break;
+                    case "4" : {
+                        itemOrdered = "Corsair Gold PSU";
+                        System.out.println("Checking if the item is in stock. ");
+                        if (Math.random() * 10 > 3)
+                            System.out.println("This item is in stock, please proceed to checkout");
+                    }
+                }
+            }
+
+                System.out.println("Please Enter your Credit Card Information Below: \n");
 
             System.out.println("Cardholder Name: ");
             String cardHolderName = userInput.nextLine();
@@ -193,6 +239,7 @@ public class Client {
             String enc_cardExp = Utility.encrypt(cardExp, SecKey_gen2, ivParameterSpec);
             String enc_cardCVV = Utility.encrypt(cardCVV, SecKey_gen2, ivParameterSpec);
             String enc_PostalCode = Utility.encrypt(PostalCode, SecKey_gen2, ivParameterSpec);
+            String enc_itemOrdered = Utility.encrypt(itemOrdered, SecKey_gen2, ivParameterSpec);
             System.out.println("encrypted");
 
             printStr.println(enc_cardHolderName);
@@ -200,26 +247,13 @@ public class Client {
             printStr.println(enc_cardExp);
             printStr.println(enc_cardCVV);
             printStr.println(enc_PostalCode);
+            printStr.println(enc_itemOrdered);
 
             System.out.println("Credit Card Information has been Securely Transmitted to Seller");
 
         } catch (IOException i) {
             System.out.println(i);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException | ParseException e) {
             e.printStackTrace();
         }
     }
