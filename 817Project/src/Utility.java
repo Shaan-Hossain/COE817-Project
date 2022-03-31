@@ -20,10 +20,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Utility {
 	public static SecretKey genKeyWithSalt(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {   
-		    SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-		    KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
-		    SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-		    return secret;
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
+		SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+		return secret;
 	}
 	
 	public static String encrypt(String encryptedMessage, SecretKey SecKey_gen, IvParameterSpec iv) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException, InvalidAlgorithmParameterException {
